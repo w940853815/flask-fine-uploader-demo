@@ -64,17 +64,19 @@ def handle_delete(uuid):
 def handle_upload(f, attrs):
     """ Handle a chunked or non-chunked upload.
     """
-
     chunked = False
     dest_folder = os.path.join(app.config['UPLOAD_DIRECTORY'], attrs['qquuid'])
     dest = os.path.join(dest_folder, attrs['qqfilename'])
-
-
-    # Chunked
-    if attrs.has_key('qqtotalparts') and int(attrs['qqtotalparts']) > 1:
-        chunked = True
-        dest_folder = os.path.join(app.config['CHUNKS_DIRECTORY'], attrs['qquuid'])
-        dest = os.path.join(dest_folder, attrs['qqfilename'], str(attrs['qqpartindex']))
+    if int(sys.version[:1]) >= 3:
+        if 'qqtotalparts' in attrs and int(attrs['qqtotalparts']) > 1:
+            chunked = True
+            dest_folder = os.path.join(app.config['CHUNKS_DIRECTORY'], attrs['qquuid'])
+            dest = os.path.join(dest_folder, attrs['qqfilename'], str(attrs['qqpartindex']))
+    else:
+        if attrs.has_key('qqtotalparts') and int(attrs['qqtotalparts']) > 1:
+            chunked = True
+            dest_folder = os.path.join(app.config['CHUNKS_DIRECTORY'], attrs['qquuid'])
+            dest = os.path.join(dest_folder, attrs['qqfilename'], str(attrs['qqpartindex']))
 
     save_upload(f, dest)
 
